@@ -5,17 +5,6 @@ import { UnsavedWinner, SavedWinner } from "./WinnerTypes";
 import { revalidatePath } from "next/cache";
 import CreateForm from "./CreateForm";
 export default async function Create() {
-  // async function createTable() {
-  //   "use server";
-  //   const client = await db.connect();
-
-  //   try {
-  //     await client.sql`CREATE TABLE Results (id UUID PRIMARY KEY, datetime TIMESTAMP, animal VARCHAR(255), winner VARCHAR(255), artist VARCHAR(255));`;
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }
-
   async function addResult(data: UnsavedWinner) {
     "use server";
     const client = await db.connect();
