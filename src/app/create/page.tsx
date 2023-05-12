@@ -29,6 +29,17 @@ export default async function Create() {
     revalidatePath("/create");
   }
 
+  async function deleteWinner(winnerId: string) {
+    "use server";
+    const client = await db.connect();
+    try {
+      await client.sql`DELETE FROM Results WHERE id = ${winnerId}`;
+    } catch (error) {
+      console.log(error);
+    }
+    revalidatePath("/create");
+  }
+
   async function getWinners() {
     "use server";
     const client = await db.connect();
@@ -56,16 +67,8 @@ export default async function Create() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      {/* <form action={createTable}>
-        <button type="submit">Create table</button>
-      </form> */}
-      {/* <form action={addResult}>
-        <input type="text" name="animal" />
-        <input type="text" name="winner" />
-        <button type="submit">Add result</button>
-      </form> */}
       <CreateForm onSaveWinner={addResult} />
-      <WinnerList onRequestWinners={getWinners} />
+      <WinnerList onRequestWinners={getWinners} onDelete={deleteWinner} />
     </main>
   );
 }

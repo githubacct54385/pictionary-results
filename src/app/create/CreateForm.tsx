@@ -25,23 +25,32 @@ export default function CreateForm({
           setArtist("");
         })
       }
+      className="flex flex-col space-y-4 p-4"
     >
       <input
         type="text"
         value={winner}
         onChange={(e) => setWinner(e.target.value)}
+        className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        placeholder="Winner"
       />
       <input
         type="text"
         value={animal}
         onChange={(e) => setAnimal(e.target.value)}
+        className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        placeholder="Animal"
       />
       <input
         type="text"
         value={artist}
         onChange={(e) => setArtist(e.target.value)}
+        className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        placeholder="Artist"
       />
-      <button type="submit">Add result</button>
+      <button type="submit" className="px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600">
+        Add result
+      </button>
     </form>
   );
 }
