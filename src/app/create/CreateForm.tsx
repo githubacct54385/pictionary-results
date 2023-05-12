@@ -1,8 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Winner } from "./Winner";
-
-export type UnsavedWinner = Pick<Winner, "animal" | "winner" | "artist">;
+import { UnsavedWinner } from "./Winner";
 
 export default function CreateForm({
   onSaveWinner,
@@ -12,19 +10,23 @@ export default function CreateForm({
   const [winner, setWinner] = useState<string>("");
   const [animal, setAnimal] = useState<string>("");
   const [artist, setArtist] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   return (
     <form
-      onSubmit={() =>
+      onSubmit={() => {
+        setIsLoading(true);
         onSaveWinner({
           animal,
           winner,
-          artist
+          artist,
         }).then(() => {
           setWinner("");
           setAnimal("");
           setArtist("");
-        })
-      }
+          setIsLoading(false);
+        });
+      }}
       className="flex flex-col space-y-4 p-4"
     >
       <input
@@ -48,8 +50,15 @@ export default function CreateForm({
         className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
         placeholder="Artist"
       />
-      <button type="submit" className="px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600">
-        Add result
+      <button
+        type="submit"
+        className={`px-4 py-2 rounded-md text-white ${
+          isLoading
+            ? "bg-gray-500 cursor-not-allowed"
+            : "bg-indigo-500 hover:bg-indigo-600"
+        }`}
+      >
+        {isLoading ? "Loading..." : "Add result"}
       </button>
     </form>
   );

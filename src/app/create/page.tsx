@@ -22,7 +22,9 @@ export default async function Create() {
     try {
       await client.sql`
       INSERT INTO Results (id, datetime, animal, winner, artist) 
-      VALUES (${uuidv4()}, ${new Date().toUTCString()}, ${data.animal}, ${data.winner}, ${data.artist});`;
+      VALUES (${uuidv4()}, ${new Date().toUTCString()}, ${data.animal}, ${
+        data.winner
+      }, ${data.artist});`;
     } catch (error) {
       console.log(error);
     }
@@ -44,13 +46,13 @@ export default async function Create() {
     "use server";
     const client = await db.connect();
     const winners = await client.sql`SELECT * FROM RESULTS`;
-    const winnersDto = winners.rows.map(w => {
+    const winnersDto = winners.rows.map((w) => {
       const date = new Date(w.datetime);
-    
+
       const day = ("0" + date.getDate()).slice(-2);
       const month = ("0" + (date.getMonth() + 1)).slice(-2); // Months are zero indexed, so we add 1
       const year = date.getFullYear();
-    
+
       const dateString2 = `${month}/${day}/${year}`;
 
       const winnerDto: Winner = {
@@ -58,10 +60,10 @@ export default async function Create() {
         winner: w.winner,
         animal: w.animal,
         dateString: dateString2,
-        artist: w.artist
+        artist: w.artist,
       };
       return winnerDto;
-    })
+    });
     return winnersDto;
   }
 
