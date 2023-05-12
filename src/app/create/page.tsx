@@ -1,9 +1,9 @@
 import { db } from "@vercel/postgres";
 import { v4 as uuidv4 } from "uuid";
 import WinnerList from "./WinnerList";
-import { Winner } from "./Winner";
+import { UnsavedWinner, SavedWinner } from "./WinnerTypes";
 import { revalidatePath } from "next/cache";
-import CreateForm, { UnsavedWinner } from "./CreateForm";
+import CreateForm from "./CreateForm";
 export default async function Create() {
   // async function createTable() {
   //   "use server";
@@ -55,7 +55,7 @@ export default async function Create() {
 
       const dateString2 = `${month}/${day}/${year}`;
 
-      const winnerDto: Winner = {
+      const winnerDto: SavedWinner = {
         id: w.id,
         winner: w.winner,
         animal: w.animal,

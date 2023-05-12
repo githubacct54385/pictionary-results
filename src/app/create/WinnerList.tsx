@@ -1,6 +1,6 @@
 "use client";   
 import { useEffect, useState } from "react";
-import { SavedWinner } from "./Winner";
+import { SavedWinner } from "./WinnerTypes";
 import { Spinner } from "./Spinner";
 
 export default function WinnerList({

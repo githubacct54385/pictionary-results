@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { UnsavedWinner } from "./Winner";
+import { UnsavedWinner } from "./WinnerTypes";
 
 export default function CreateForm({
   onSaveWinner,
