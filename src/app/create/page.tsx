@@ -40,7 +40,11 @@ export default async function Create() {
       const client = await db.connect();
       const loggedInUser = await currentUser();
       const winners =
-        await client.sql`SELECT * FROM RESULTS WHERE Email = ${loggedInUser?.emailAddresses[0].emailAddress}`;
+        await client.sql`SELECT *
+        FROM Results
+        WHERE Email = ${loggedInUser?.emailAddresses[0].emailAddress}
+        ORDER BY datetime DESC
+        LIMIT 50;`;
       const winnersDto = winners.rows.map((w) => {
         const date = new Date(w.datetime);
 
