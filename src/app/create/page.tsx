@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import CreateForm from "./CreateForm";
 import { currentUser } from "@clerk/nextjs";
 import { DateTime } from "luxon";
+import { kv } from "@vercel/kv";
 
 export default async function Create() {
   async function addResult(data: UnsavedWinner) {
@@ -18,6 +19,9 @@ export default async function Create() {
       VALUES (${uuidv4()}, ${new Date().toUTCString()}, ${data.animal}, ${
         data.winner
       }, ${data.artist}, ${loggedInUser?.emailAddresses[0].emailAddress});`;
+
+      await kv.del(`user_${loggedInUser?.emailAddresses[0].emailAddress}`);
+    
     } catch (error) {
       console.log(error);
     }
@@ -29,6 +33,10 @@ export default async function Create() {
     const client = await db.connect();
     try {
       await client.sql`DELETE FROM Results WHERE id = ${winnerId}`;
+      
+      const loggedInUser = await currentUser();
+      await kv.del(`user_${loggedInUser?.emailAddresses[0].emailAddress}`);
+
     } catch (error) {
       console.log(error);
     }
@@ -40,8 +48,15 @@ export default async function Create() {
     try {
       const client = await db.connect();
       const loggedInUser = await currentUser();
-      const winners =
-        await client.sql`SELECT *
+
+      const redisResult = await kv.get<SavedWinner[]>(
+        `user_${loggedInUser?.emailAddresses[0].emailAddress}`
+      );
+      if (redisResult) {
+        return redisResult;
+      }
+
+      const winners = await client.sql`SELECT *
         FROM Results
         WHERE Email = ${loggedInUser?.emailAddresses[0].emailAddress}
         ORDER BY datetime DESC
@@ -57,6 +72,10 @@ export default async function Create() {
         };
         return winnerDto;
       });
+      await kv.set<SavedWinner[]>(
+        `user_${loggedInUser?.emailAddresses[0].emailAddress}`,
+        winnersDto
+      );
       return winnersDto;
     } catch (error) {
       console.log(error);
@@ -67,8 +86,8 @@ export default async function Create() {
   return (
     <main className="min-h-screen flex items-center justify-center bg-gradient-to-r from-purple-400 via-pink-500 to-red-500">
       <div className="bg-white p-10 rounded-lg shadow-2xl w-3/4 md:w-1/2 lg:w-3/5">
-      <CreateForm onSaveWinner={addResult} />
-      <WinnerList onRequestWinners={getWinners} onDelete={deleteWinner} />
+        <CreateForm onSaveWinner={addResult} />
+        <WinnerList onRequestWinners={getWinners} onDelete={deleteWinner} />
       </div>
     </main>
   );
