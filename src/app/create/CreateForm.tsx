@@ -74,7 +74,7 @@ export default function CreateForm({
       <button
         type="submit"
         className={`px-4 py-2 rounded-md text-white ${
-          isLoading
+          (isLoading || (!winner || !animal || !artist)) 
             ? "bg-gray-500 cursor-not-allowed"
             : "bg-indigo-500 hover:bg-indigo-600"
         }`}
