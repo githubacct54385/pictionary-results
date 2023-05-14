@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link';
-import { UserButton } from "@clerk/nextjs";
+// import { UserButton } from "@clerk/nextjs";
 
 export default function Home() {
   return (
@@ -10,7 +10,7 @@ export default function Home() {
           Get started by editing&nbsp;
           <code className="font-mono font-bold">src/app/page.tsx</code>
         </p>
-        <UserButton />
+        {/* <UserButton /> */}
         <h1 className="title">
           <Link href="/create">Go To Results</Link>
         </h1>
