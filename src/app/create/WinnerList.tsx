@@ -26,8 +26,8 @@ export default function WinnerList({
           <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-purple-500"></div>
         </div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
+        <div className="md:overflow-x-auto">
+          <table className="md:min-w-full md:divide-y md:divide-gray-200 hidden md:table">
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Animal</th>
@@ -53,6 +53,19 @@ export default function WinnerList({
               ))}
             </tbody>
           </table>
+          <div className="md:hidden space-y-4">
+            {winners.map((winner) => (
+              <div key={winner.id} className="p-4 border border-gray-200 rounded-md space-y-2">
+                <p><span className="font-bold">Animal:</span> {winner.animal}</p>
+                <p><span className="font-bold">Winner:</span> {winner.winner}</p>
+                <p><span className="font-bold">Artist:</span> {winner.artist}</p>
+                <p><span className="font-bold">Date:</span> {winner.dateString}</p>
+                <button onClick={() => onDelete(winner.id)} className="px-3 py-2 w-full bg-red-500 text-white rounded-md hover:bg-red-600">
+                  Delete
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>
