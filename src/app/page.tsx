@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { UserButton } from "@clerk/nextjs";
+import { UserButton, SignedIn, SignedOut } from "@clerk/nextjs";
 
 export default function Home() {
   return (
@@ -11,17 +11,35 @@ export default function Home() {
         <p className="text-lg mb-6 text-center">
           Keep track of your Pictionary games and winners in a fun and easy way!
         </p>
-        <div className="flex items-center justify-center">
-          <UserButton />
-        </div>
-        <div className="mt-6 flex justify-center">
-          <Link
-            href="/create"
-            className="px-6 py-2 rounded-md border-2 border-indigo-500 text-indigo-500 font-semibold text-lg hover:bg-indigo-500 hover:text-white"
-          >
-            Go To Results
-          </Link>
-        </div>
+        <SignedIn>
+          <div className="flex items-center justify-center">
+            <UserButton />
+          </div>
+          <div className="mt-6 flex justify-center">
+            <Link
+              href="/create"
+              className="px-6 py-2 rounded-md border-2 border-indigo-500 text-indigo-500 font-semibold text-lg hover:bg-indigo-500 hover:text-white"
+            >
+              Go To Results
+            </Link>
+          </div>
+        </SignedIn>
+        <SignedOut>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <Link
+              href="/sign-in"
+              className="px-6 py-2 rounded-md border-2 border-indigo-500 text-indigo-500 font-semibold text-lg hover:bg-indigo-500 hover:text-white"
+            >
+              Sign in
+            </Link>
+            <Link
+              href="/sign-up"
+              className="px-6 py-2 rounded-md border-2 border-indigo-500 text-indigo-500 font-semibold text-lg hover:bg-indigo-500 hover:text-white"
+            >
+              Sign up
+            </Link>
+          </div>
+        </SignedOut>
       </div>
     </main>
   );
