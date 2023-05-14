@@ -5,6 +5,7 @@ import { UnsavedWinner, SavedWinner } from "./WinnerTypes";
 import { revalidatePath } from "next/cache";
 import CreateForm from "./CreateForm";
 import { currentUser } from "@clerk/nextjs";
+import { DateTime } from "luxon";
 
 export default async function Create() {
   async function addResult(data: UnsavedWinner) {
@@ -46,19 +47,12 @@ export default async function Create() {
         ORDER BY datetime DESC
         LIMIT 50;`;
       const winnersDto = winners.rows.map((w) => {
-        const date = new Date(w.datetime);
-
-        const day = ("0" + date.getDate()).slice(-2);
-        const month = ("0" + (date.getMonth() + 1)).slice(-2); // Months are zero indexed, so we add 1
-        const year = date.getFullYear();
-
-        const dateString2 = `${month}/${day}/${year}`;
-
+        const date = DateTime.fromJSDate(w.datetime).toFormat("MM/dd/yyyy");
         const winnerDto: SavedWinner = {
           id: w.id,
           winner: w.winner,
           animal: w.animal,
-          dateString: dateString2,
+          dateString: date,
           artist: w.artist,
         };
         return winnerDto;
