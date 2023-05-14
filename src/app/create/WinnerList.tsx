@@ -27,6 +27,7 @@ export default function WinnerList({
         </div>
       ) : (
         <div className="md:overflow-x-auto">
+          {/* desktop & tablet */}
           <table className="md:min-w-full md:divide-y md:divide-gray-200 hidden md:table">
             <thead className="bg-gray-50">
               <tr>
@@ -53,6 +54,8 @@ export default function WinnerList({
               ))}
             </tbody>
           </table>
+          {/* end desktop & tablet */}
+          {/* mobile */}
           <div className="md:hidden space-y-4">
             {winners.map((winner) => (
               <div key={winner.id} className="p-4 border border-gray-200 rounded-md space-y-2">
@@ -66,6 +69,7 @@ export default function WinnerList({
               </div>
             ))}
           </div>
+          {/* mobile */}
         </div>
       )}
     </div>
