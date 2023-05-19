@@ -9,8 +9,9 @@ import {
 import { revalidatePath } from "next/cache";
 import { randomUUID } from "crypto";
 import { DateTime } from "luxon";
+import { kv } from '@vercel/kv';
 
-function CreatePostgresConnection() {
+function createPostgresConnection() {
   return new Pool({
     user: process.env.PGSQL_USER,
     password: process.env.PGSQL_PASSWORD,
@@ -20,9 +21,18 @@ function CreatePostgresConnection() {
   });
 }
 
+const createRedisKey = (userId: string) => `user_${userId}`;
+
 export async function getWinners(userId: string) {
   try {
-    const conn = CreatePostgresConnection();
+    const redisKey = createRedisKey(userId);
+    const redisResults = await kv.get<SavedWinner[]>(redisKey);
+    if(redisResults) {
+      return {
+        rows: redisResults
+      };
+    }
+    const conn = createPostgresConnection();
 
     const query = `
         SELECT *
@@ -46,6 +56,8 @@ export async function getWinners(userId: string) {
 
     await conn.end();
 
+    await kv.set<SavedWinner[]>(redisKey, winnersDto);
+
     return {
       rows: winnersDto,
     };
@@ -59,14 +71,16 @@ export async function getWinners(userId: string) {
 }
 
 export async function deleteWinner(
-  winnerId: string
+  winnerId: string,
+  userId: string
 ): Promise<DeleteWinnerResponse> {
   try {
-    const conn = CreatePostgresConnection();
+    const conn = createPostgresConnection();
 
     const query = `UPDATE Results SET isDeleted = TRUE WHERE id = $1`;
     await conn.query(query, [winnerId]);
     await conn.end();
+    await kv.del(createRedisKey(userId));
     return { success: true };
   } catch (error) {
     console.log(error);
@@ -76,7 +90,7 @@ export async function deleteWinner(
 
 export async function addResult(data: UnsavedWinner, userId: string) {
   try {
-    const conn = CreatePostgresConnection();
+    const conn = createPostgresConnection();
     const query = `INSERT into results (id, datetime, animal, winner, artist, userId, isDeleted) values ($1, $2, $3, $4, $5, $6, $7)`;
     await conn.query(query, [
       randomUUID(),
@@ -89,7 +103,7 @@ export async function addResult(data: UnsavedWinner, userId: string) {
     ]);
     await conn.end();
 
-    //await kv.del(`user_${userId}`);
+    await kv.del(createRedisKey(userId));
   } catch (error) {
     console.log(error);
   }

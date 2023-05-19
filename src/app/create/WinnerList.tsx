@@ -29,8 +29,11 @@ export default function WinnerList() {
   }, [userId]);
 
   async function onDeleteWinner(winnerId: string) {
+    if (!userId) {
+      return;
+    }
     setError("");
-    const result = await deleteWinner(winnerId);
+    const result = await deleteWinner(winnerId, userId);
     if ("success" in result) {
       setWinners(winners.filter((w) => w.id !== winnerId));
     } else {
