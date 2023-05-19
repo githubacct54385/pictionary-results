@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { SavedWinner } from "./WinnerTypes";
 import { getWinners, deleteWinner } from "./Actions";
 import { useAuth } from "@clerk/nextjs";
+
 export default function WinnerList() {
   const [winners, setWinners] = useState<SavedWinner[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -35,7 +36,7 @@ export default function WinnerList() {
     setError("");
     const result = await deleteWinner(winnerId, userId);
     if ("success" in result) {
-      setWinners(winners.filter((w) => w.id !== winnerId));
+      //setWinners(winners.filter((w) => w.id !== winnerId));
     } else {
       setError(result.error);
     }

@@ -9,3 +9,18 @@ export type SavedWinner = {
 export type UnsavedWinner = Pick<SavedWinner, "animal" | "winner" | "artist">;
 
 export type DeleteWinnerResponse = {success: boolean} | {error: string};
+
+export type AddWinnerSuccessResponse = {
+    success: boolean;
+    newWinner: SavedWinner;
+};
+
+export type AddWinnerFailureBadData = {
+    errorMessages: {id: string, msg: string}[];
+};
+
+export type AddWinnerFailureServerError = {
+    id: string;
+    errorMessage: string;
+};
+export type AddWinnerResponse = AddWinnerSuccessResponse | AddWinnerFailureBadData | AddWinnerFailureServerError;

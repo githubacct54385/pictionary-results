@@ -9,23 +9,34 @@ export default function CreateForm() {
   const [animal, setAnimal] = useState<string>("");
   const [artist, setArtist] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [errors, setErrors] = useState<{id: string, msg: string}[]>([]);
   const { userId } = useAuth();
 
   return (
     <form
-      onSubmit={() => {
+      onSubmit={(e) => {
+        e.preventDefault();
         if(!userId) {
           return;
         }
         setIsLoading(true);
+        setErrors([]);
         addResult({
           animal,
           winner,
           artist,
-        }, userId).then(() => {
-          setWinner("");
-          setAnimal("");
-          setArtist("");
+        }, userId).then(res => {
+          if("errorMessage" in res && "id" in res) {
+            setErrors([{id: res.id, msg: res.errorMessage}]);
+          }
+          else if("errorMessages" in res) {
+            setErrors(res.errorMessages);
+          }
+          else if("success" in res) {
+            setWinner("");
+            setAnimal("");
+            setArtist("");
+          }
           setIsLoading(false);
         });
       }}
@@ -51,6 +62,7 @@ export default function CreateForm() {
         </svg>
         Go Back
       </Link>
+      {errors?.length > 0 && (errors.map((e) => <span key={e.id}>{e.msg}</span>))}
       <input
         type="text"
         value={winner}
