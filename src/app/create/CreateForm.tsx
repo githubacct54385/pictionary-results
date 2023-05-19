@@ -1,27 +1,28 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { UnsavedWinner } from "./WinnerTypes";
+import { addResult } from "./Actions";
+import { useAuth } from "@clerk/nextjs";
 
-export default function CreateForm({
-  onSaveWinner,
-}: {
-  onSaveWinner: (unsavedWinner: UnsavedWinner) => Promise<void>;
-}) {
+export default function CreateForm() {
   const [winner, setWinner] = useState<string>("");
   const [animal, setAnimal] = useState<string>("");
   const [artist, setArtist] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { userId } = useAuth();
 
   return (
     <form
       onSubmit={() => {
+        if(!userId) {
+          return;
+        }
         setIsLoading(true);
-        onSaveWinner({
+        addResult({
           animal,
           winner,
           artist,
-        }).then(() => {
+        }, userId).then(() => {
           setWinner("");
           setAnimal("");
           setArtist("");
