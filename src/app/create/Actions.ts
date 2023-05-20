@@ -13,6 +13,7 @@ import { randomUUID } from "crypto";
 import { DateTime } from "luxon";
 import { kv } from "@vercel/kv";
 import { z } from "zod";
+import { revalidatePath } from "next/cache";
 
 function createPostgresConnection() {
   return new Pool({
@@ -84,6 +85,7 @@ export async function deleteWinner(
     await conn.query(query, [winnerId]);
     await conn.end();
     await kv.del(createRedisKey(userId));
+    revalidatePath("/");
     return { success: true };
   } catch (error) {
     console.log(error);
