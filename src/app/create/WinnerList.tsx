@@ -4,11 +4,22 @@ import { SavedWinner } from "./WinnerTypes";
 import { getWinners, deleteWinner } from "./Actions";
 import { useAuth } from "@clerk/nextjs";
 
-export default function WinnerList() {
+interface WinnerListTypes {
+  getWinners: typeof getWinners;
+  deleteWinner: typeof deleteWinner;
+}
+
+export default function WinnerList(props: WinnerListTypes) {
+  const { getWinners, deleteWinner } = props;
   const [winners, setWinners] = useState<SavedWinner[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const { userId } = useAuth();
+
+  async function onDeleteWinner(winnerId: string): Promise<void> {
+    const res = await deleteWinner(winnerId, userId);
+    console.log(res);
+  }
 
   useEffect(() => {
     if (!userId) {
@@ -27,20 +38,7 @@ export default function WinnerList() {
       .finally(() => {
         setIsLoading(false);
       });
-  }, [userId]);
-
-  async function onDeleteWinner(winnerId: string) {
-    if (!userId) {
-      return;
-    }
-    setError("");
-    const result = await deleteWinner(winnerId, userId);
-    if ("success" in result) {
-      //setWinners(winners.filter((w) => w.id !== winnerId));
-    } else {
-      setError(result.error);
-    }
-  }
+  }, [getWinners, userId])
 
   if (isLoading) {
     return (
@@ -98,7 +96,7 @@ export default function WinnerList() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <button
-                        onClick={() => onDeleteWinner(winner.id)}
+                        onClick={async () => await onDeleteWinner(winner.id)}
                         className="px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
                       >
                         Delete
@@ -129,7 +127,7 @@ export default function WinnerList() {
                     <span className="font-bold">Date:</span> {winner.dateString}
                   </p>
                   <button
-                    onClick={() => onDeleteWinner(winner.id)}
+                    onClick={async () => await onDeleteWinner(winner.id)}
                     className="px-3 py-2 w-full bg-red-500 text-white rounded-md hover:bg-red-600"
                   >
                     Delete

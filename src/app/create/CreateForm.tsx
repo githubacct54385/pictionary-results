@@ -1,45 +1,50 @@
 "use client";
-import { useState } from "react";
 import Link from "next/link";
+import { useTransition } from 'react';
 import { addResult } from "./Actions";
 import { useAuth } from "@clerk/nextjs";
 
 export default function CreateForm() {
-  const [winner, setWinner] = useState<string>("");
-  const [animal, setAnimal] = useState<string>("");
-  const [artist, setArtist] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [errors, setErrors] = useState<{id: string, msg: string}[]>([]);
   const { userId } = useAuth();
+  let [isPending, startTransition] = useTransition();
+
+  async function handleAction(formData: FormData) {
+    startTransition(async () => {
+      if(!userId) {
+        return;
+      }
+      await addResult(formData, userId);
+    })
+  }
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        if(!userId) {
-          return;
-        }
-        setIsLoading(true);
-        setErrors([]);
-        addResult({
-          animal,
-          winner,
-          artist,
-        }, userId).then(res => {
-          if("errorMessage" in res && "id" in res) {
-            setErrors([{id: res.id, msg: res.errorMessage}]);
-          }
-          else if("errorMessages" in res) {
-            setErrors(res.errorMessages);
-          }
-          else if("success" in res) {
-            setWinner("");
-            setAnimal("");
-            setArtist("");
-          }
-          setIsLoading(false);
-        });
-      }}
+    <form action={handleAction}
+      // onSubmit={(e) => {
+      //   e.preventDefault();
+      //   if(!userId) {
+      //     return;
+      //   }
+      //   setIsLoading(true);
+      //   setErrors([]);
+      //   addResult({
+      //     animal,
+      //     winner,
+      //     artist,
+      //   }, userId).then(res => {
+      //     if("errorMessage" in res && "id" in res) {
+      //       setErrors([{id: res.id, msg: res.errorMessage}]);
+      //     }
+      //     else if("errorMessages" in res) {
+      //       setErrors(res.errorMessages);
+      //     }
+      //     else if("success" in res) {
+      //       setWinner("");
+      //       setAnimal("");
+      //       setArtist("");
+      //     }
+      //     setIsLoading(false);
+      //   });
+      // }}
       className="flex flex-col space-y-4 p-4"
     >
       <Link
@@ -62,37 +67,34 @@ export default function CreateForm() {
         </svg>
         Go Back
       </Link>
-      {errors?.length > 0 && (errors.map((e) => <span key={e.id}>{e.msg}</span>))}
       <input
         type="text"
-        value={winner}
-        onChange={(e) => setWinner(e.target.value)}
+        name="winner"
         className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
         placeholder="Winner"
       />
       <input
         type="text"
-        value={animal}
-        onChange={(e) => setAnimal(e.target.value)}
+        name="animal"
         className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
         placeholder="Animal"
       />
       <input
         type="text"
-        value={artist}
-        onChange={(e) => setArtist(e.target.value)}
+        name="artist"
         className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
         placeholder="Artist"
       />
       <button
         type="submit"
+        disabled={isPending}
         className={`px-4 py-2 rounded-md text-white ${
-          (isLoading || (!winner || !animal || !artist)) 
+          (isPending) 
             ? "bg-gray-500 cursor-not-allowed"
             : "bg-indigo-500 hover:bg-indigo-600"
         }`}
       >
-        {isLoading ? "Loading..." : "Add result"}
+        {isPending ? "Loading..." : "Add result"}
       </button>
     </form>
   );
