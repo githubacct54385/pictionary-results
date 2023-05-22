@@ -1,52 +1,25 @@
 "use client";
 import Link from "next/link";
-import { useTransition } from 'react';
+import { useState } from "react";
 import { addResult } from "./Actions";
-import { useAuth } from "@clerk/nextjs";
 
-export default function CreateForm() {
-  const { userId } = useAuth();
-  let [isPending, startTransition] = useTransition();
+interface CreateFormProps {
+  userId: string;
+}
+
+export default function CreateForm(props: CreateFormProps) {
+  const { userId } = props;
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleAction(formData: FormData) {
-    startTransition(async () => {
-      if(!userId) {
-        return;
-      }
-      await addResult(formData, userId);
-    })
+    setIsSubmitting(true);
+    await addResult(formData, userId);
+    console.log(`not submitting`);
+    setIsSubmitting(false);
   }
 
   return (
-    <form action={handleAction}
-      // onSubmit={(e) => {
-      //   e.preventDefault();
-      //   if(!userId) {
-      //     return;
-      //   }
-      //   setIsLoading(true);
-      //   setErrors([]);
-      //   addResult({
-      //     animal,
-      //     winner,
-      //     artist,
-      //   }, userId).then(res => {
-      //     if("errorMessage" in res && "id" in res) {
-      //       setErrors([{id: res.id, msg: res.errorMessage}]);
-      //     }
-      //     else if("errorMessages" in res) {
-      //       setErrors(res.errorMessages);
-      //     }
-      //     else if("success" in res) {
-      //       setWinner("");
-      //       setAnimal("");
-      //       setArtist("");
-      //     }
-      //     setIsLoading(false);
-      //   });
-      // }}
-      className="flex flex-col space-y-4 p-4"
-    >
+    <form action={handleAction} className="flex flex-col space-y-4 p-4">
       <Link
         href="/"
         className="inline-flex items-center justify-center mb-4 bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-sm"
@@ -87,14 +60,13 @@ export default function CreateForm() {
       />
       <button
         type="submit"
-        disabled={isPending}
         className={`px-4 py-2 rounded-md text-white ${
-          (isPending) 
+          isSubmitting
             ? "bg-gray-500 cursor-not-allowed"
             : "bg-indigo-500 hover:bg-indigo-600"
         }`}
       >
-        {isPending ? "Loading..." : "Add result"}
+        {isSubmitting ? "Loading..." : "Add result"}
       </button>
     </form>
   );

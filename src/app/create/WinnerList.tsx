@@ -1,30 +1,25 @@
 "use client";
 import { useEffect, useState } from "react";
-import { SavedWinner } from "./WinnerTypes";
 import { getWinners, deleteWinner } from "./Actions";
-import { useAuth } from "@clerk/nextjs";
-
+import { Winners } from "@prisma/client";
+import { DateTime } from "luxon";
 interface WinnerListTypes {
   getWinners: typeof getWinners;
   deleteWinner: typeof deleteWinner;
+  userId: string;
 }
 
 export default function WinnerList(props: WinnerListTypes) {
-  const { getWinners, deleteWinner } = props;
-  const [winners, setWinners] = useState<SavedWinner[]>([]);
+  const { getWinners, deleteWinner, userId } = props;
+  const [winners, setWinners] = useState<Winners[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const { userId } = useAuth();
 
   async function onDeleteWinner(winnerId: string): Promise<void> {
-    const res = await deleteWinner(winnerId, userId);
-    console.log(res);
+    await deleteWinner(winnerId, userId);
   }
 
   useEffect(() => {
-    if (!userId) {
-      return;
-    }
     getWinners(userId)
       .then((res) => {
         if (res.userError) {
@@ -81,7 +76,7 @@ export default function WinnerList(props: WinnerListTypes) {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {winners.map((winner) => (
-                  <tr key={winner.id}>
+                  <tr key={winner.winnerId}>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {winner.animal}
                     </td>
@@ -92,11 +87,11 @@ export default function WinnerList(props: WinnerListTypes) {
                       {winner.artist}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {winner.dateString}
+                      {DateTime.fromISO(winner.createdAt.toString()).toFormat("MM/dd/yyyy")}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <button
-                        onClick={async () => await onDeleteWinner(winner.id)}
+                        onClick={async () => await onDeleteWinner(winner.winnerId)}
                         className="px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
                       >
                         Delete
@@ -111,7 +106,7 @@ export default function WinnerList(props: WinnerListTypes) {
             <div className="md:hidden space-y-4">
               {winners.map((winner) => (
                 <div
-                  key={winner.id}
+                  key={winner.winnerId}
                   className="p-4 border border-gray-200 rounded-md space-y-2"
                 >
                   <p>
@@ -124,10 +119,10 @@ export default function WinnerList(props: WinnerListTypes) {
                     <span className="font-bold">Artist:</span> {winner.artist}
                   </p>
                   <p>
-                    <span className="font-bold">Date:</span> {winner.dateString}
+                    <span className="font-bold">Date:</span> {DateTime.fromISO(winner.createdAt.toString()).toFormat("MM/dd/yyyy")}
                   </p>
                   <button
-                    onClick={async () => await onDeleteWinner(winner.id)}
+                    onClick={async () => await onDeleteWinner(winner.winnerId)}
                     className="px-3 py-2 w-full bg-red-500 text-white rounded-md hover:bg-red-600"
                   >
                     Delete

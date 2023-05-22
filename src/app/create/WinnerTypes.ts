@@ -1,8 +1,10 @@
+import { Winners } from "@prisma/client";
+
 export type SavedWinner = {
     id: string;
     animal: string;
     winner: string;
-    dateString: string;
+    dateString: Date;
     artist: string;
 }
 
@@ -12,7 +14,7 @@ export type DeleteWinnerResponse = {success: boolean} | {error: string};
 
 export type AddWinnerSuccessResponse = {
     success: boolean;
-    newWinner: SavedWinner;
+    newWinner: Winners;
 };
 
 export type AddWinnerFailureBadData = {
