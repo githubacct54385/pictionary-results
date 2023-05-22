@@ -10,12 +10,20 @@ interface CreateFormProps {
 export default function CreateForm(props: CreateFormProps) {
   const { userId } = props;
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<{ id: string; msg: string }[]>([]);
 
   async function handleAction(formData: FormData) {
     setIsSubmitting(true);
-    await addResult(formData, userId);
-    console.log(`not submitting`);
-    setIsSubmitting(false);
+    try {
+      const res = await addResult(formData, userId);
+      if ("errorMessages" in res) {
+        setErrors(res.errorMessages);
+      }
+      console.log(`not submitting`);
+      setIsSubmitting(false);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   return (
@@ -40,6 +48,9 @@ export default function CreateForm(props: CreateFormProps) {
         </svg>
         Go Back
       </Link>
+      {errors && errors.length > 0 && (
+        <div>{errors.map((e) => e.msg).join(", ")}</div>
+      )}
       <input
         type="text"
         name="winner"

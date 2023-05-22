@@ -10,7 +10,7 @@ export type SavedWinner = {
 
 export type UnsavedWinner = Pick<SavedWinner, "animal" | "winner" | "artist">;
 
-export type DeleteWinnerResponse = {success: boolean} | {error: string};
+export type DeleteWinnerResponse = {success: boolean, error: string};
 
 export type AddWinnerSuccessResponse = {
     success: boolean;

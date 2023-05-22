@@ -16,7 +16,18 @@ export default function WinnerList(props: WinnerListTypes) {
   const [error, setError] = useState<string | null>(null);
 
   async function onDeleteWinner(winnerId: string): Promise<void> {
-    await deleteWinner(winnerId, userId);
+    setError("");
+    try {
+      const res = await deleteWinner(winnerId, userId);
+      if(res.success) {
+        setWinners(winners.filter(p => p.winnerId !== winnerId));
+      } else {
+        setError(res.error);
+      }
+    }
+    catch(error) {
+      console.error(error);
+    }
   }
 
   useEffect(() => {

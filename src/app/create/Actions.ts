@@ -65,10 +65,11 @@ export async function deleteWinner(
       },
     });
     await kv.del(createRedisKey(userId));
-    return { success: true };
+    revalidatePath("/");
+    return { success: true, error: "" };
   } catch (error) {
     console.log(error);
-    return { error: `Failed to delete winner` };
+    return { success: false, error: `Failed to delete winner` };
   }
 }
 
@@ -107,7 +108,7 @@ export async function addResult(
         errorMessages: parseResult.error.errors.map((e) => {
           return {
             field: e.path[0].toString(),
-            id: randomUUID(),
+            id: randomUUID() as string,
             msg: `Field: ${e.path[0].toString()} Message: ${e.message}`,
           };
         }),
