@@ -1,50 +1,31 @@
 "use client";
 import { useEffect, useState } from "react";
-import { getWinners, deleteWinner } from "./Actions";
 import { Winners } from "@prisma/client";
 import { DateTime } from "luxon";
-interface WinnerListTypes {
-  getWinners: typeof getWinners;
-  deleteWinner: typeof deleteWinner;
-  userId: string;
-}
 
-export default function WinnerList(props: WinnerListTypes) {
-  const { getWinners, deleteWinner, userId } = props;
+export default function WinnerList() {
   const [winners, setWinners] = useState<Winners[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  async function onDeleteWinner(winnerId: string): Promise<void> {
-    setError("");
-    try {
-      const res = await deleteWinner(winnerId, userId);
-      if(res.success) {
-        setWinners(winners.filter(p => p.winnerId !== winnerId));
-      } else {
-        setError(res.error);
-      }
-    }
-    catch(error) {
-      console.error(error);
-    }
-  }
-
   useEffect(() => {
-    getWinners(userId)
-      .then((res) => {
-        if (res.userError) {
-          setError(res.userError);
-        }
-        setWinners(res.rows);
-      })
-      .catch((error) => {
-        setError(error);
-      })
-      .finally(() => {
+    fetch(`/api/winners`).then((value) => {
+      value.json().then((res) => {
+        setWinners(res.winners);
         setIsLoading(false);
       });
-  }, [getWinners, userId])
+    });
+  }, []);
+
+  async function onDelete(winnerId: string) {
+    const response = await fetch(`/api/deleteWinner?winnerId=${winnerId}`, {
+      method: "DELETE",
+    });
+    const deleteWinnerJson = await response.json();
+    if ("success" in deleteWinnerJson && deleteWinnerJson.success) {
+      setWinners(winners.filter((w) => w.winnerId !== winnerId));
+    }
+  }
 
   if (isLoading) {
     return (
@@ -98,11 +79,13 @@ export default function WinnerList(props: WinnerListTypes) {
                       {winner.artist}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {DateTime.fromISO(winner.createdAt.toString()).toFormat("MM/dd/yyyy")}
+                      {DateTime.fromISO(winner.createdAt.toString()).toFormat(
+                        "MM/dd/yyyy"
+                      )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <button
-                        onClick={async () => await onDeleteWinner(winner.winnerId)}
+                        onClick={() => onDelete(winner.winnerId)}
                         className="px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
                       >
                         Delete
@@ -130,10 +113,13 @@ export default function WinnerList(props: WinnerListTypes) {
                     <span className="font-bold">Artist:</span> {winner.artist}
                   </p>
                   <p>
-                    <span className="font-bold">Date:</span> {DateTime.fromISO(winner.createdAt.toString()).toFormat("MM/dd/yyyy")}
+                    <span className="font-bold">Date:</span>{" "}
+                    {DateTime.fromISO(winner.createdAt.toString()).toFormat(
+                      "MM/dd/yyyy"
+                    )}
                   </p>
                   <button
-                    onClick={async () => await onDeleteWinner(winner.winnerId)}
+                    onClick={() => onDelete(winner.winnerId)}
                     className="px-3 py-2 w-full bg-red-500 text-white rounded-md hover:bg-red-600"
                   >
                     Delete
