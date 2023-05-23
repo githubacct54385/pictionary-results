@@ -1,45 +1,22 @@
 "use client";
-import { useEffect, useState } from "react";
-import { Winners } from "@prisma/client";
+import { useState } from "react";
 import { DateTime } from "luxon";
+import { Winners } from "@prisma/client";
 
-export default function WinnerList() {
-  const [winners, setWinners] = useState<Winners[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+type WinnerListProps = {
+  winners: Winners[];
+  onDeleteWinner: (winnerId: string) => Promise<void>;
+};
+
+export default function WinnerList(props: WinnerListProps) {
+  
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetch(`/api/winners`).then((value) => {
-      value.json().then((res) => {
-        setWinners(res.winners);
-        setIsLoading(false);
-      });
-    });
-  }, []);
-
-  async function onDelete(winnerId: string) {
-    const response = await fetch(`/api/deleteWinner?winnerId=${winnerId}`, {
-      method: "DELETE",
-    });
-    const deleteWinnerJson = await response.json();
-    if ("success" in deleteWinnerJson && deleteWinnerJson.success) {
-      setWinners(winners.filter((w) => w.winnerId !== winnerId));
-    }
-  }
-
-  if (isLoading) {
-    return (
-      <div className="mt-8">
-        <Loading />
-      </div>
-    );
-  }
 
   return (
     <div className="mt-8">
       {error && <WinnersError error={error} />}
       <div className="md:overflow-x-auto">
-        {winners.length === 0 ? (
+        {props.winners.length === 0 ? (
           <div className="text-center py-4">
             No winners yet, please add one.
           </div>
@@ -67,7 +44,7 @@ export default function WinnerList() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {winners.map((winner) => (
+                {props.winners.map((winner) => (
                   <tr key={winner.winnerId}>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {winner.animal}
@@ -85,7 +62,7 @@ export default function WinnerList() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <button
-                        onClick={() => onDelete(winner.winnerId)}
+                        onClick={() => props.onDeleteWinner(winner.winnerId)}
                         className="px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
                       >
                         Delete
@@ -98,7 +75,7 @@ export default function WinnerList() {
             {/* end desktop & tablet */}
             {/* mobile */}
             <div className="md:hidden space-y-4">
-              {winners.map((winner) => (
+              {props.winners.map((winner) => (
                 <div
                   key={winner.winnerId}
                   className="p-4 border border-gray-200 rounded-md space-y-2"
@@ -119,7 +96,7 @@ export default function WinnerList() {
                     )}
                   </p>
                   <button
-                    onClick={() => onDelete(winner.winnerId)}
+                    onClick={() => props.onDeleteWinner(winner.winnerId)}
                     className="px-3 py-2 w-full bg-red-500 text-white rounded-md hover:bg-red-600"
                   >
                     Delete
