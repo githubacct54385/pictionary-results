@@ -95,7 +95,7 @@ export default function CreateForm(props: CreateFormProps) {
             : "bg-indigo-500 hover:bg-indigo-600"
         }`}
       >
-        {isSubmitting ? "Loading..." : "Add result"}
+        {isSubmitting ? "Submitting..." : "Add result"}
       </button>
     </div>
   );

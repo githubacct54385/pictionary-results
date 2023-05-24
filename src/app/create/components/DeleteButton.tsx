@@ -32,7 +32,7 @@ export default function DeleteButton(props: DeleteButtonProps) {
       }}
       className={tailwindStyles()}
     >
-      Delete
+      {isDeleting ? "Deleting..." : "Delete"}
     </button>
   );
 }
