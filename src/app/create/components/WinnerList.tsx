@@ -1,7 +1,7 @@
 "use client";
-import { useState } from "react";
 import { DateTime } from "luxon";
 import { Winners } from "@prisma/client";
+import DeleteButton from "./DeleteButton";
 
 type WinnerListProps = {
   winners: Winners[];
@@ -9,12 +9,8 @@ type WinnerListProps = {
 };
 
 export default function WinnerList(props: WinnerListProps) {
-  
-  const [error, setError] = useState<string | null>(null);
-
   return (
     <div className="mt-8">
-      {error && <WinnersError error={error} />}
       <div className="md:overflow-x-auto">
         {props.winners.length === 0 ? (
           <div className="text-center py-4">
@@ -61,12 +57,11 @@ export default function WinnerList(props: WinnerListProps) {
                       )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <button
-                        onClick={() => props.onDeleteWinner(winner.winnerId)}
-                        className="px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
-                      >
-                        Delete
-                      </button>
+                      <DeleteButton
+                        isMobile={false}
+                        winnerId={winner.winnerId}
+                        onDeleteWinner={props.onDeleteWinner}
+                      />
                     </td>
                   </tr>
                 ))}
@@ -95,12 +90,11 @@ export default function WinnerList(props: WinnerListProps) {
                       "MM/dd/yyyy"
                     )}
                   </p>
-                  <button
-                    onClick={() => props.onDeleteWinner(winner.winnerId)}
-                    className="px-3 py-2 w-full bg-red-500 text-white rounded-md hover:bg-red-600"
-                  >
-                    Delete
-                  </button>
+                  <DeleteButton
+                    isMobile
+                    winnerId={winner.winnerId}
+                    onDeleteWinner={props.onDeleteWinner}
+                  />
                 </div>
               ))}
             </div>
@@ -108,18 +102,6 @@ export default function WinnerList(props: WinnerListProps) {
           </>
         )}
       </div>
-    </div>
-  );
-}
-
-function WinnersError(props: { error: string }) {
-  return <div className="text-center py-4 text-red-600">{props.error}</div>;
-}
-
-function Loading() {
-  return (
-    <div className="flex justify-center items-center">
-      <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-purple-500"></div>
     </div>
   );
 }

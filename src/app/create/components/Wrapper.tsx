@@ -14,9 +14,13 @@ type WrapperProps = {
 
 export default function Wrapper(props: WrapperProps) {
   const [winners, setWinners] = useState<Winners[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    props.onGetWinners().then((w) => setWinners(w));
+    props.onGetWinners().then((w) => {
+      setWinners(w);
+      setIsLoading(false);
+    });
   }, [props]);
 
   async function handleDelete(winnerId: string) {
@@ -42,11 +46,25 @@ export default function Wrapper(props: WrapperProps) {
     <main className="min-h-screen flex items-center justify-center bg-gradient-to-r from-purple-400 via-pink-500 to-red-500">
       <div className="bg-white p-10 rounded-lg shadow-2xl w-3/4 md:w-1/2 lg:w-3/5">
         <CreateForm onCreateWinner={handleCreateWinner} />
-        <WinnerList
-          winners={winners}
-          onDeleteWinner={async (winnerId) => await handleDelete(winnerId)}
-        />
+        {isLoading ? (
+          <Loading />
+        ) : (
+          <div>
+            <WinnerList
+              winners={winners}
+              onDeleteWinner={async (winnerId) => await handleDelete(winnerId)}
+            />
+          </div>
+        )}
       </div>
     </main>
+  );
+}
+
+function Loading() {
+  return (
+    <div className="flex justify-center items-center">
+      <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-purple-500"></div>
+    </div>
   );
 }
