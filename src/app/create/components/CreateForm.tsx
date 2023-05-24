@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
-import { createWinner } from "../page";
+import { createWinner } from "../serverActions";
 
 type CreateFormProps = {
   onCreateWinner: typeof createWinner;

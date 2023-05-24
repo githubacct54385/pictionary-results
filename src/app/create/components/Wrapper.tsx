@@ -2,7 +2,7 @@
 
 import { Winners } from "@prisma/client";
 import { useEffect, useState } from "react";
-import { createWinner, deleteWinner, getWinners } from "../page";
+import { createWinner, deleteWinner, getWinners } from "../serverActions";
 import CreateForm from "./CreateForm";
 import WinnerList from "./WinnerList";
 
