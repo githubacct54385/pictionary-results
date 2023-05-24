@@ -16,26 +16,15 @@ export default function CreateForm(props: CreateFormProps) {
 
   return (
     <div className="flex flex-col space-y-4 p-4">
+      <div className="flex justify-start">
       <Link
         href="/"
-        className="inline-flex items-center justify-center mb-4 bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-sm"
+        className="bg-indigo-500 hover:bg-indigo-700 text-white py-2 px-4 rounded-md"
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          className="w-4 h-4 mr-1"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M10 19l-7-7m0 0l7-7m-7 7h18"
-          />
-        </svg>
         Go Back
       </Link>
+
+      </div>
       {errors && errors.length > 0 && (
         <div className="bg-white rounded-md border border-gray-300 shadow p-4">
           {errors.map((e, index) => (
