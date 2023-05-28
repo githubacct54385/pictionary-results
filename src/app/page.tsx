@@ -15,7 +15,7 @@ export default function Home() {
           <div className="flex items-center justify-center">
             <UserButton />
           </div>
-          <div className="mt-6 flex justify-center">
+          <div id="goToResults" className="mt-6 flex justify-center">
             <Link
               href="/create"
               className="bg-indigo-500 hover:bg-indigo-700 text-white py-2 px-4 rounded-md"

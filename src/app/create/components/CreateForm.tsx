@@ -15,7 +15,7 @@ export default function CreateForm(props: CreateFormProps) {
   const [animal, setAnimal] = useState("");
 
   return (
-    <div className="flex flex-col space-y-4 p-4">
+    <div className="flex flex-col space-y-4 p-4" id="winnerForm">
       <div className="flex justify-start">
       <Link
         href="/"
@@ -77,6 +77,7 @@ export default function CreateForm(props: CreateFormProps) {
           }
           setIsSubmitting(false);
         }}
+        id="addWinnerButton"
         disabled={isSubmitting || !artist || !winner || !animal}
         className={`px-4 py-2 rounded-md text-white ${
           isSubmitting || !artist || !winner || !animal

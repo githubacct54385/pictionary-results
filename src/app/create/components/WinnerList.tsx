@@ -10,7 +10,7 @@ type WinnerListProps = {
 
 export default function WinnerList(props: WinnerListProps) {
   return (
-    <div className="mt-8">
+    <div id="winnerList" className="mt-8">
       <div className="md:overflow-x-auto">
         {props.winners.length === 0 ? (
           <div className="text-center py-4">

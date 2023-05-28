@@ -24,6 +24,7 @@ export default function DeleteButton(props: DeleteButtonProps) {
 
   return (
     <button
+      id="button-delete-winner"
       disabled={isDeleting}
       onClick={async () => {
         setIsDeleting(true);
