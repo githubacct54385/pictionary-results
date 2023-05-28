@@ -1,5 +1,4 @@
 "use client";
-import { DateTime } from "luxon";
 import { Winners } from "@prisma/client";
 import DeleteButton from "./DeleteButton";
 
@@ -10,98 +9,45 @@ type WinnerListProps = {
 
 export default function WinnerList(props: WinnerListProps) {
   return (
-    <div id="winnerList" className="mt-8">
-      <div className="md:overflow-x-auto">
-        {props.winners.length === 0 ? (
-          <div className="text-center py-4">
-            No winners yet, please add one.
-          </div>
-        ) : (
-          <>
-            {/* desktop & tablet */}
-            <table className="md:min-w-full md:divide-y md:divide-gray-200 hidden md:table">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Animal
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Winner
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Artist
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Date
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {props.winners.map((winner) => (
-                  <tr key={winner.winnerId}>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {winner.animal}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {winner.winner}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {winner.artist}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {DateTime.fromISO(winner.createdAt.toString()).toFormat(
-                        "MM/dd/yyyy"
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <DeleteButton
-                        isMobile={false}
-                        winnerId={winner.winnerId}
-                        onDeleteWinner={props.onDeleteWinner}
-                      />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            {/* end desktop & tablet */}
-            {/* mobile */}
-            <div className="md:hidden space-y-4">
-              {props.winners.map((winner) => (
-                <div
-                  key={winner.winnerId}
-                  className="p-4 border border-gray-200 rounded-md space-y-2"
-                >
-                  <p>
-                    <span className="font-bold">Animal:</span> {winner.animal}
-                  </p>
-                  <p>
-                    <span className="font-bold">Winner:</span> {winner.winner}
-                  </p>
-                  <p>
-                    <span className="font-bold">Artist:</span> {winner.artist}
-                  </p>
-                  <p>
-                    <span className="font-bold">Date:</span>{" "}
-                    {DateTime.fromISO(winner.createdAt.toString()).toFormat(
-                      "MM/dd/yyyy"
-                    )}
-                  </p>
-                  <DeleteButton
-                    isMobile
-                    winnerId={winner.winnerId}
-                    onDeleteWinner={props.onDeleteWinner}
-                  />
-                </div>
-              ))}
+    <div className="flex flex-wrap justify-center gap-2" id="winner-flex-box">
+      {props.winners.length === 0 && <div>No winners yet, please add one.</div>}
+      {props.winners.length > 0 &&
+        props.winners.map((winner) => (
+          <div
+            key="{winner.winnerId}"
+            id="winner-card"
+            className="group flex w-64 flex-col rounded-b-2xl bg-emerald-300 font-normal text-stone-800"
+          >
+            <div
+              className="flex h-64 w-64 border-x-4 border-t-4 border-emerald-300 border-t-emerald-300"
+              id="winner-image-container"
+            >
+              <img
+                id="winner-image"
+                className="h-full w-full object-cover"
+                src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.pngkey.com%2Fpng%2Fdetail%2F233-2332677_ega-png.png&f=1&nofb=1&ipt=1799a74bf88e9c393962ca57ebffefa044768c5f4dfac7dacb9ab153132f5f33&ipo=images"
+                alt="Drawing"
+              />
             </div>
-            {/* end mobile */}
-          </>
-        )}
-      </div>
+            <div className="flex flex-col" id="winner-details-flex-container">
+              <div className="mb-2 flex justify-start ps-3 text-xl font-bold">
+                Kangaroo
+              </div>
+              <div className="flex justify-start ps-3 text-xs">
+                Drawn by Alex
+              </div>
+              <div className="flex justify-start ps-3 text-xs">
+                Guessed by Paul
+              </div>
+              <div className="flex justify-start ps-3">
+                <DeleteButton
+                  onDeleteWinner={props.onDeleteWinner}
+                  winnerId={winner.winnerId}
+                />
+              </div>
+            </div>
+          </div>
+        ))}
     </div>
   );
 }
