@@ -17,10 +17,15 @@ export default function Wrapper(props: WrapperProps) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    props.onGetWinners().then((w) => {
-      setWinners(w);
-      setIsLoading(false);
-    });
+    props
+      .onGetWinners()
+      .then((w) => {
+        setWinners(w);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        console.error("Loading failed on getting winners");
+      });
   }, [props]);
 
   async function handleDelete(winnerId: string) {
@@ -32,8 +37,8 @@ export default function Wrapper(props: WrapperProps) {
 
   async function handleCreateWinner(
     winner: string,
-    artist: string,
-    animal: string
+    animal: string,
+    artist: string
   ) {
     const res = await props.onCreateWinner(winner, animal, artist);
     if (res.success && res.newWinner) {
@@ -43,27 +48,25 @@ export default function Wrapper(props: WrapperProps) {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gradient-to-r from-purple-400 via-pink-500 to-red-500">
-      <div className="bg-white p-10 rounded-lg shadow-2xl w-3/4 md:w-1/2 lg:w-3/5">
-        <CreateForm onCreateWinner={handleCreateWinner} />
-        {isLoading ? (
-          <Loading />
-        ) : (
-          <div>
-            <WinnerList
-              winners={winners}
-              onDeleteWinner={async (winnerId) => await handleDelete(winnerId)}
-            />
-          </div>
-        )}
-      </div>
+    <main>
+      <CreateForm onCreateWinner={handleCreateWinner} />
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <div>
+          <WinnerList
+            winners={winners}
+            onDeleteWinner={async (winnerId) => await handleDelete(winnerId)}
+          />
+        </div>
+      )}
     </main>
   );
 }
 
 function Loading() {
   return (
-    <div className="flex items-center justify-center items-center">
+    <div className="flex items-center justify-center">
       <div className="animate-spin rounded-full border-t-2 border-b-2 border-blue-500 h-12 w-12"></div>
     </div>
   );

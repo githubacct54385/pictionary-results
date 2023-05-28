@@ -63,9 +63,9 @@ export const getWinners = async () => {
       artist: z.string().min(3).max(100),
     });
     const parseResult = winnerSchema.safeParse({
-      winner,
-      artist,
-      animal,
+      winner: winner,
+      animal: animal,
+      artist: artist,
     });
     if (!parseResult.success) {
       return {
