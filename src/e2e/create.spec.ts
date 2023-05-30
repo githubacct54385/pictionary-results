@@ -4,7 +4,7 @@ import { randomUUID } from "crypto";
 test.beforeEach(async ({ page }) => {
   await page.goto("http://localhost:3000/");
 
-  await page.click("text=Sign in");
+  await page.getByRole('link', {name: "Sign in"}).click();
 
   await expect(page).toHaveURL("http://localhost:3000/sign-in");
 
@@ -29,39 +29,46 @@ test.beforeEach(async ({ page }) => {
   await page.getByRole("link", { name: "Go To Results" }).click();
 });
 
-test("should sign in, add three winners, delete all winners", async ({
+test("should sign in, add some winners, delete all winners", async ({
   page,
 }) => {
   await page.waitForSelector("#winnerForm", {
     state: "visible",
   });
-  await page.waitForSelector("#winnerList", { state: "visible" });
+  await page.waitForSelector("#winner-flex-box", { state: "visible" });
 
   await AddWinner(page);
   await AddWinner(page);
   await AddWinner(page);
+  await AddWinner(page);
+  await AddWinner(page);
+  await AddWinner(page);
+  await AddWinner(page);
 
+  await DeleteAllWinners(page);
+
+  await expect(page.locator("#no-winners-text")).toHaveText(
+    "No winners yet, please add one."
+  );
+});
+
+async function DeleteAllWinners(page: Page) {
   do {
-    const btn = page.getByRole("button").filter({ hasText: "Delete" }).first();
-    await btn?.click();
+    // hover over each #winner-card and click the delete button
+    await page.locator("#winner-card").first().hover();
+    await page.locator("#winner-delete-button").first().click();
 
     // wait until all buttons are not disabled
     await page.waitForFunction(() => {
       const buttons = Array.from(
-        document.querySelectorAll("#button-delete-winner")
+        document.querySelectorAll("#winner-delete-button")
       );
       return buttons
         .map((b) => b as HTMLButtonElement)
         .every((button) => !button.disabled);
     });
-  } while (
-    (await page.getByRole("button").filter({ hasText: "Delete" }).count()) > 0
-  );
-
-  await expect(page.locator(".text-center.py-4")).toHaveText(
-    "No winners yet, please add one."
-  );
-});
+  } while (!(await page.locator("#no-winners-text").isVisible()));
+}
 
 async function AddWinner(page: Page) {
   const winnerGuid = randomUUID();
@@ -84,15 +91,15 @@ async function AddWinner(page: Page) {
     return !buttons.some((button) => button.textContent === "Submitting...");
   });
 
-  // check that the cell content are in the right order
-  expect(
-    await page
-      .getByRole("row")
-      .filter({ has: page.getByRole("cell", { name: `winner-${winnerGuid}` }) })
-      .textContent()
-  ).toBe(`animal${animalGuid}winner-${winnerGuid}artist${artistGuid}`);
-
-  await AssertWinnerExistsInTable(page, winnerGuid, animalGuid, artistGuid);
+  await expect(page.locator("#winner-flex-box")).toContainText(
+    `animal-${animalGuid}`
+  );
+  await expect(page.locator("#winner-flex-box")).toContainText(
+    `Drawn by artist-${artistGuid}`
+  );
+  await expect(page.locator("#winner-flex-box")).toContainText(
+    `Guessed by winner-${winnerGuid}`
+  );
 }
 
 async function FillOutForm(
@@ -107,21 +114,4 @@ async function FillOutForm(
   await page.getByPlaceholder("Animal").fill(animal);
   await page.getByPlaceholder("Artist").click();
   await page.getByPlaceholder("Artist").fill(artist);
-}
-
-async function AssertWinnerExistsInTable(
-  page: Page,
-  winnerGuid: string,
-  animalGuid: string,
-  artistGuid: string
-) {
-  expect(
-    page.getByRole("cell", { name: `winner-${winnerGuid}` }).isVisible()
-  ).toBeTruthy();
-  expect(
-    page.getByRole("cell", { name: `animal-${animalGuid}` }).isVisible()
-  ).toBeTruthy();
-  expect(
-    page.getByRole("cell", { name: `artist-${artistGuid}` }).isVisible()
-  ).toBeTruthy();
 }

@@ -16,7 +16,7 @@ export default function WinnerList(props: WinnerListProps) {
         id="winner-flex-box"
       >
         {props.winners.length === 0 && (
-          <div>No winners yet, please add one.</div>
+          <div id="no-winners-text">No winners yet, please add one.</div>
         )}
         {props.winners.length > 0 &&
           props.winners.map((winner) => (
