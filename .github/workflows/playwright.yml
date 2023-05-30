@@ -20,6 +20,21 @@ jobs:
     - name: Build Nextjs app
       run: npm run build
     - name: Run Playwright tests
+      env:
+        CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
+        CI: ${{ secrets.CI }}
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        EMAIL: ${{ secrets.EMAIL }}
+        PASSWORD: ${{ secrets.PASSWORD }}
+        KV_REST_API_READ_ONLY_TOKEN: ${{ secrets.KV_REST_API_READ_ONLY_TOKEN }}
+        KV_REST_API_TOKEN: ${{ secrets.KV_REST_API_TOKEN }}
+        KV_REST_API_URL: ${{ secrets.KV_REST_API_URL }}
+        KV_URL: ${{ secrets.KV_URL }}
+        NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: ${{ secrets.NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL }}
+        NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: ${{ secrets.NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL }}
+        NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+        NEXT_PUBLIC_CLERK_SIGN_IN_URL: ${{ secrets.NEXT_PUBLIC_CLERK_SIGN_IN_URL }}
+        NEXT_PUBLIC_CLERK_SIGN_UP_URL: ${{ secrets.NEXT_PUBLIC_CLERK_SIGN_UP_URL }}
       run: npx playwright test
     - uses: actions/upload-artifact@v3
       if: always()
