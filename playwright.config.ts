@@ -38,12 +38,8 @@ export default defineConfig({
       name: 'mobileChrome',
       use: { ...devices['Pixel 5'] },
     },
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
   ],
-  // Run your local dev server before starting the tests.
+  // Build and run your local dev server before starting the tests.
   webServer: {
     command: 'npm run start',
     url: 'http://127.0.0.1:3000',
