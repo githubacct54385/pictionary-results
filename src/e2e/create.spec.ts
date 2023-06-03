@@ -4,27 +4,20 @@ import { randomUUID } from "crypto";
 test.beforeEach(async ({ page }) => {
   await page.goto("http://localhost:3000/");
 
+  await expect(page.getByText('Go To Results')).not.toBeVisible();
+
   await page.getByRole('link', {name: "Sign in"}).click();
 
   await expect(page).toHaveURL("http://localhost:3000/sign-in");
 
-  await page
-    .getByRole("button", { name: "Sign in with Google Continue with Google" })
-    .click();
+  await page.getByLabel('Email address').click();
+  await page.getByLabel('Email address').fill(process.env.EMAIL ?? "");
+  await page.getByRole('button', { name: 'Continue', exact: true }).click();
+  await page.getByLabel('Password', { exact: true }).click();
+  await page.getByLabel('Password', { exact: true }).fill(process.env.PASSWORD ?? "");
+  await page.getByRole('button', { name: 'Continue' }).click();
 
-  await page
-    .getByRole("textbox", { name: "Email or phone" })
-    .fill(process.env.EMAIL ?? "");
-
-  await page.getByRole("button", { name: "Next" }).click();
-
-  await page
-    .getByRole("textbox", { name: "Enter your password" })
-    .fill(process.env.PASSWORD ?? "");
-
-  const passwordNextButton = await page.$("#passwordNext");
-  await passwordNextButton?.click();
-
+  await expect(page).toHaveURL("http://localhost:3000/");
   await page.waitForSelector("#goToResults", { state: "visible" });
   await page.getByRole("link", { name: "Go To Results" }).click();
 });
