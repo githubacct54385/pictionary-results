@@ -6,7 +6,7 @@ test.beforeEach(async ({ page }) => {
 
   await expect(page.getByText('Go To Results')).not.toBeVisible();
 
-  await page.getByRole('link', {name: "Sign in"}).click();
+  await page.getByRole('link', {name: "Sign in"}).first().click();
 
   await expect(page).toHaveURL("http://localhost:3000/sign-in");
 
